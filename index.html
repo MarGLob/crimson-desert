@@ -1,248 +1,1049 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rotina da Viagem</title>
-    <!-- Tailwind CSS para um design moderno -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome para os ícones -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* Suavização de transições */
-        .task-enter { transition: all 0.3s ease-out; opacity: 0; transform: translateY(-10px); }
-        .task-enter-active { opacity: 1; transform: translateY(0); }
-    </style>
-</head>
-<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 font-sans antialiased pb-24 transition-colors duration-300">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guia Rápido — Crimson Desert</title>
 
-    <!-- Cabeçalho Fixo -->
-    <header class="bg-blue-600 dark:bg-blue-800 text-white p-4 sticky top-0 z-10 shadow-md">
-        <h1 class="text-xl font-bold text-center">Checklist da Viagem</h1>
-        <p class="text-sm text-center text-blue-200 mt-1" id="header-date"></p>
+  <!-- Fonte Inter para leitura rápida e Cinzel para toque medieval nos títulos -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Configuração de tokens de design inspirados em Crimson Desert
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            obsidian: '#0e0d10',
+            graphite: '#17151a',
+            graphiteHover: '#1e1b23',
+            borderSubtle: '#2a2630',
+            crimson: '#c81e1e',
+            crimsonBright: '#ef4444',
+            gold: '#d4a843',
+            goldSoft: '#e5c16c',
+            parchment: '#e7e2d8',
+            ash: '#9c95a6'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            display: ['Cinzel', 'Georgia', 'serif']
+          },
+          boxShadow: {
+            crimsonGlow: '0 0 24px -6px rgba(200, 30, 30, 0.35)',
+            goldGlow: '0 0 18px -6px rgba(212, 168, 67, 0.35)'
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-obsidian text-parchment font-sans antialiased min-h-screen overflow-x-hidden selection:bg-crimson/40 selection:text-white">
+
+  <!-- Brilho atmosférico sutil no topo -->
+  <div aria-hidden="true" class="pointer-events-none fixed inset-x-0 top-0 h-64 bg-gradient-to-b from-crimson/10 via-crimson/[0.03] to-transparent z-0"></div>
+
+  <!-- Container Principal -->
+  <div class="relative z-10 max-w-6xl mx-auto px-3 sm:px-5 lg:px-6 pb-20">
+
+    <!-- Cabeçalho Principal -->
+    <header class="pt-5 pb-4 sm:pt-7 sm:pb-5 border-b border-borderSubtle/80">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <!-- Identidade do Guia -->
+        <div class="min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold uppercase tracking-wider bg-crimson/20 text-crimsonBright border border-crimson/40">
+              Pywel Codex
+            </span>
+            <span class="text-xs text-ash">
+              Baseado nos 8 vídeos de <span class="text-gold font-medium">@LetmeSOLOGames</span>
+            </span>
+          </div>
+          <h1 class="mt-1.5 font-display text-2xl sm:text-3xl font-bold tracking-wide text-white leading-tight">
+            Guia Rápido <span class="text-crimsonBright">—</span> <span class="text-gold">Crimson Desert</span>
+          </h1>
+        </div>
+
+        <!-- Ações Globais: Modo Compacto e Resetar -->
+        <div class="flex items-center gap-2 shrink-0 flex-wrap">
+          <button
+            id="btn-compact"
+            type="button"
+            aria-pressed="false"
+            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-graphite border border-borderSubtle text-parchment hover:bg-graphiteHover hover:border-gold/50 transition cursor-pointer"
+            title="Alternar visualização compacta para ver mais dicas na tela"
+          >
+            <svg class="w-3.5 h-3.5 text-gold" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            <span id="compact-label">Modo Compacto</span>
+          </button>
+
+          <button
+            id="btn-reset"
+            type="button"
+            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-graphite border border-borderSubtle text-ash hover:text-crimsonBright hover:border-crimson/60 hover:bg-crimson/10 transition cursor-pointer"
+            title="Resetar marcações do checklist"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span>Resetar Checklist</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Barra de Progresso Geral -->
+      <div class="mt-4 bg-graphite border border-borderSubtle rounded-xl p-3 sm:p-3.5">
+        <div class="flex items-center justify-between text-xs sm:text-sm mb-2 gap-2">
+          <div class="flex items-center gap-2 font-medium text-parchment">
+            <span class="w-2 h-2 rounded-full bg-crimsonBright"></span>
+            <span>Progresso Geral</span>
+          </div>
+          <div class="flex items-center gap-2.5 font-semibold tabular-nums">
+            <span id="progress-count" class="text-parchment">0 / 146</span>
+            <span id="progress-percent" class="px-2 py-0.5 rounded-md text-xs bg-gold/15 text-gold border border-gold/30">0%</span>
+          </div>
+        </div>
+        <div class="w-full h-2.5 bg-obsidian rounded-full overflow-hidden border border-borderSubtle/70">
+          <div
+            id="progress-bar"
+            class="h-full w-0 bg-gradient-to-r from-crimson via-crimsonBright to-gold rounded-full transition-all duration-300 ease-out"
+          ></div>
+        </div>
+      </div>
     </header>
 
-    <main class="max-w-md mx-auto p-4" id="app-container">
-        <!-- Os dias serão injetados aqui via JavaScript -->
+    <!-- Barra de Busca Fixa no Topo ao Rolar -->
+    <section aria-label="Busca e filtros rápidos" class="sticky top-0 z-30 bg-obsidian/95 backdrop-blur-md py-3 border-b border-borderSubtle/70 -mx-3 px-3 sm:-mx-5 sm:px-5 lg:-mx-6 lg:px-6">
+      <div class="flex flex-col md:flex-row gap-2.5 md:items-center">
+        <!-- Input de Busca -->
+        <div class="relative flex-1">
+          <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-ash">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 105.25 5.25a7.5 7.5 0 0011.4 11.4z" />
+            </svg>
+          </span>
+
+          <input
+            id="search-input"
+            type="text"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Buscar dica, local, item, boss ou categoria... (pressione /)"
+            class="w-full pl-9 pr-16 py-2.5 rounded-xl bg-graphite border border-borderSubtle text-sm text-white placeholder-ash/80 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/50 transition"
+          />
+
+          <!-- Indicador de atalho "/" e botão limpar "X" -->
+          <div class="absolute inset-y-0 right-2 flex items-center gap-1.5">
+            <kbd id="search-shortcut-hint" class="hidden sm:inline-flex items-center justify-center px-1.5 py-0.5 text-[11px] font-mono font-semibold text-ash bg-obsidian border border-borderSubtle rounded">
+              /
+            </kbd>
+            <button
+              id="btn-clear-search"
+              type="button"
+              aria-label="Limpar busca"
+              class="hidden items-center justify-center w-7 h-7 rounded-lg text-ash hover:text-white hover:bg-borderSubtle/70 transition cursor-pointer"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filtros de Status -->
+        <div id="status-filters" class="flex items-center gap-1.5 flex-wrap" role="group" aria-label="Filtrar por status">
+          <button data-status="all" type="button" class="status-pill px-3 py-2 rounded-xl text-xs font-medium border transition cursor-pointer">
+            Todos <span class="ml-1 opacity-75 tabular-nums" data-status-count="all">146</span>
+          </button>
+          <button data-status="pending" type="button" class="status-pill px-3 py-2 rounded-xl text-xs font-medium border transition cursor-pointer">
+            Pendentes <span class="ml-1 opacity-75 tabular-nums" data-status-count="pending">146</span>
+          </button>
+          <button data-status="completed" type="button" class="status-pill px-3 py-2 rounded-xl text-xs font-medium border transition cursor-pointer">
+            Concluídos <span class="ml-1 opacity-75 tabular-nums" data-status-count="completed">0</span>
+          </button>
+          <button data-status="favorites" type="button" class="status-pill px-3 py-2 rounded-xl text-xs font-medium border transition cursor-pointer">
+            Favoritos ⭐ <span class="ml-1 opacity-75 tabular-nums" data-status-count="favorites">0</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filtros por Categoria em Pílulas -->
+    <section aria-label="Filtros por categoria" class="mt-4">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-[11px] font-semibold uppercase tracking-wider text-ash">Categorias</span>
+        <span id="results-summary" class="text-xs text-ash tabular-nums">Exibindo 146 de 146 dicas</span>
+      </div>
+      <div id="category-pills" class="flex flex-wrap gap-1.5 sm:gap-2">
+        <!-- Preenchido dinamicamente via JavaScript -->
+      </div>
+    </section>
+
+    <!-- Lista de Dicas -->
+    <main id="tips-container" class="mt-5 space-y-6">
+      <!-- Renderizado dinamicamente via JavaScript -->
     </main>
 
-    <!-- Botão Adicionar Dia Fixo na Base -->
-    <div class="fixed bottom-0 left-0 w-full bg-white dark:bg-gray-800 border-t dark:border-gray-700 p-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] flex justify-center">
-        <button onclick="addNewDay()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-full shadow-lg flex items-center gap-2 transition-transform transform active:scale-95">
-            <i class="fa-solid fa-calendar-plus"></i> Adicionar Novo Dia
+    <!-- Estado Vazio Amigável -->
+    <section id="empty-state" class="hidden mt-10 bg-graphite border border-borderSubtle rounded-2xl p-8 sm:p-10 text-center max-w-lg mx-auto">
+      <div class="w-12 h-12 mx-auto rounded-xl bg-crimson/15 border border-crimson/30 flex items-center justify-center text-2xl mb-3">
+        🧭
+      </div>
+      <h2 class="font-display text-lg font-bold text-white">Nenhuma dica encontrada</h2>
+      <p class="mt-1.5 text-sm text-ash">
+        Não encontramos resultados para os filtros ou termo de busca atuais. Tente outro termo ou limpe os filtros para voltar ao guia completo.
+      </p>
+      <button
+        id="btn-clear-all-filters"
+        type="button"
+        class="mt-5 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-crimson hover:bg-crimsonBright text-white shadow-crimsonGlow transition cursor-pointer"
+      >
+        Limpar busca e filtros
+      </button>
+    </section>
+
+    <!-- Rodapé -->
+    <footer class="mt-12 pt-5 border-t border-borderSubtle/60 text-center text-xs text-ash space-y-1">
+      <p>Guia Rápido — Crimson Desert • 146 dicas compiladas dos 8 vídeos de <span class="text-gold">@LetmeSOLOGames</span></p>
+      <p>Checklist, favoritos e modo compacto são salvos automaticamente no seu navegador.</p>
+    </footer>
+  </div>
+
+  <!-- Botão Flutuante Voltar ao Topo -->
+  <button
+    id="btn-scroll-top"
+    type="button"
+    aria-label="Voltar ao topo"
+    class="hidden fixed bottom-5 right-4 sm:right-6 z-40 w-11 h-11 rounded-full bg-crimson hover:bg-crimsonBright text-white border border-gold/40 shadow-crimsonGlow items-center justify-center transition cursor-pointer"
+  >
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+    </svg>
+  </button>
+
+  <!-- Modal Customizado de Confirmação de Reset (Sem usar confirm/alert nativos) -->
+  <div
+    id="reset-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="reset-modal-title"
+    class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/75 backdrop-blur-sm"
+  >
+    <div class="w-full max-w-md bg-graphite border border-borderSubtle rounded-2xl p-5 sm:p-6 shadow-2xl">
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-xl bg-crimson/20 border border-crimson/40 flex items-center justify-center text-crimsonBright shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86l-7.1 12.27A2 2 0 004.92 19h14.16a2 2 0 001.73-2.87l-7.1-12.27a2 2 0 00-3.42 0z" />
+          </svg>
+        </div>
+        <div>
+          <h2 id="reset-modal-title" class="font-display text-lg font-bold text-white">Resetar Checklist?</h2>
+          <p class="mt-1 text-sm text-ash leading-relaxed">
+            Isso vai desmarcar todos os itens concluídos do seu progresso atual. Deseja manter ou apagar seus favoritos?
+          </p>
+        </div>
+      </div>
+
+      <label class="mt-4 flex items-center gap-2.5 p-3 rounded-xl bg-obsidian/70 border border-borderSubtle text-xs text-parchment cursor-pointer select-none">
+        <input id="reset-include-favorites" type="checkbox" class="w-4 h-4 rounded accent-crimson cursor-pointer" />
+        <span>Também remover todas as estrelas de Favoritos ⭐</span>
+      </label>
+
+      <div class="mt-5 flex items-center justify-end gap-2.5">
+        <button
+          id="btn-cancel-reset"
+          type="button"
+          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-obsidian border border-borderSubtle text-parchment hover:bg-graphiteHover transition cursor-pointer"
+        >
+          Cancelar
         </button>
+        <button
+          id="btn-confirm-reset"
+          type="button"
+          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-crimson hover:bg-crimsonBright text-white shadow-crimsonGlow transition cursor-pointer"
+        >
+          Confirmar Reset
+        </button>
+      </div>
     </div>
+  </div>
 
-    <script>
-        const STORAGE_KEY = 'tarefas_viagem_v3';
-        let appData = [];
+  <!-- Toast de Feedback Rápido -->
+  <div
+    id="toast"
+    role="status"
+    aria-live="polite"
+    class="pointer-events-none fixed bottom-5 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-xl bg-graphite border border-gold/40 text-xs sm:text-sm font-medium text-white shadow-goldGlow opacity-0 translate-y-2 transition-all duration-200"
+  ></div>
 
-        // Data de início estipulada
-        const startDate = new Date(2026, 8, 21); // 21/09/2026
+  <script>
+    /**
+     * =========================================================================
+     * DADOS COMPLETOS DO GUIA (9 Categorias • 146 Dicas Integrais)
+     * Tokens envolvidos em [[...]] são renderizados automaticamente como <kbd>
+     * =========================================================================
+     */
+    const CATEGORIES = [
+      { id: 'combate', icon: '⚔️', name: 'Combate e Bossfights' },
+      { id: 'exploracao', icon: '🧭', name: 'Exploração, Mapa e Puzzles' },
+      { id: 'farm', icon: '💰', name: 'Farm, Dinheiro e Economia' },
+      { id: 'acampamento', icon: '🏕️', name: 'Acampamento, Despacho e Pesquisas' },
+      { id: 'crafting', icon: '⚒️', name: 'Crafting, Forja e Culinária' },
+      { id: 'inventario', icon: '🎒', name: 'Inventário, Menus e Atalhos' },
+      { id: 'montarias', icon: '🐴', name: 'Montarias, Pets e Caça' },
+      { id: 'segredos', icon: '🗝️', name: 'Itens Secretos, Habilidades Grátis e Localizações' },
+      { id: 'interacoes', icon: '🎭', name: 'Interações, Furtividade e Easter Eggs' }
+    ];
 
-        function formatDateBR(date) {
-            return date.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit' }).toUpperCase();
+    const TIPS = [
+      // CATEGORIA 1: ⚔️ Combate e Bossfights (1 a 21)
+      { id: 1, category: 'combate', title: 'Matar inimigos dá XP e Artefatos', description: 'Cada abate enche uma barra de XP; ao completar, você ganha 1 Cubo/Artefato do Abismo. Limpar exércitos compensa.' },
+      { id: 2, category: 'combate', title: 'Segure o ataque para combar fácil', description: 'Mantenha [[RB]] ou [[RT]] pressionado para atacar sem parar (mais rápido que apertar repetidamente). Enquanto segura, aperte [[Y]], [[A]], [[B]], [[LB]] ou [[LT]] para encaixar golpes (ex.: segurar [[RB]] + apertar [[Y]] para empunhalada).' },
+      { id: 3, category: 'combate', title: 'Travar a mira (Lock-on)', description: 'Quando surgir a bolinha branca sobre um alvo, aperte [[Seta para Baixo]] para travar a mira nele.' },
+      { id: 4, category: 'combate', title: 'Modo Focar em Bossfights (Cura Segura)', description: 'Ative o Modo Focar para desacelerar o boss — o cooldown das comidas roda normal, permitindo curar vários alimentos, trocar armas/armaduras e se reposicionar com calma.' },
+      { id: 5, category: 'combate', title: 'Câmera lenta automática com Arco', description: 'Ao deslizar correndo, pular ou usar Palm no ar e apertar o gatilho de mirar com o arco, o Modo Focar ativa automaticamente.' },
+      { id: 6, category: 'combate', title: 'Empalada Secreta (com qualquer arma)', description: 'Segure [[Bloqueio]] + aperte [[Correr 2x]] para sair em disparada atropelando inimigos (com lança/alabarda, empala durante a corrida).' },
+      { id: 7, category: 'combate', title: 'Estocada usando Maça ou Machado', description: 'Mantenha uma adaga equipada — ao acionar estocada com armas sem ponta, o Kliff puxa a adaga automaticamente.' },
+      { id: 8, category: 'combate', title: 'Chutes com o Arco', description: 'Mirando com o arco, aperte [[Y]] para soltar uma sequência de chutes (cancela o disparo da flecha e aproveita o dano das botas).' },
+      { id: 9, category: 'combate', title: 'Lança-Canhão atira projéteis', description: 'Armas do tipo canhão (ex.: Canhão de Bismuto) têm moveset de lança, mas disparam projéteis usando o comando de empalada ([[Triângulo + R1]] ou [[Y + RB]]).' },
+      { id: 10, category: 'combate', title: 'Palm carregado em movimento', description: 'Dá para carregar o Force Palm enquanto corre. Ele acumula níveis de força e reduz temporariamente a defesa do inimigo.' },
+      { id: 11, category: 'combate', title: 'Cancelar ataques de Bosses com Palm', description: 'Use o Palm para interromper combos com hiper-armadura e carregamentos especiais de chefes, além de deixá-los enfraquecidos.' },
+      { id: 12, category: 'combate', title: 'Quebrar guarda de escudos pesados (Demeniss)', description: 'Use o Palm em inimigos de escudo grande para causar stagger, abrir a guarda e aplicar finalização crítica.' },
+      { id: 13, category: 'combate', title: 'Desarmar inimigos', description: 'Após levar um golpe ou fazer esquiva perfeita, use o ataque do escudo para derrubar a arma e o escudo do inimigo (ótimo para farmar equipamentos do Abismo).' },
+      { id: 14, category: 'combate', title: 'Escudo dos Ventos sem absorver golpe', description: 'Não precisa absorver um ataque inimigo primeiro — ative o escudo e já canalize/lance a energia para derrubar e afastar hordas (excelente em Demeniss).' },
+      { id: 15, category: 'combate', title: 'Escudo nas costas soma defesa', description: 'Mesmo usando arma de 2 mãos, deixar um escudo equipado no slot de atalho (nas costas) soma a defesa dele ao Kliff. (Dano de luvas/botas só conta ao bater com elas; equipar uma 2ª arma no lugar cancela o bônus).' },
+      { id: 16, category: 'combate', title: 'Evaporar Magos Voadores (Santuários)', description: 'Use o Defletir da espada (luz solar) mirando neles para eliminá-los na hora.' },
+      { id: 17, category: 'combate', title: 'Derrotar Serpentes Abissais em 1 golpe', description: 'Use o Axion direto na boca das serpentes de pedra para arrancar o núcleo de uma vez.' },
+      { id: 18, category: 'combate', title: 'Derrubar Torres de Arqueiros', description: 'Quebre torres (de madeira e até concreto) com ataque forte ou ataque do cavalo correndo antes de iniciar a batalha.' },
+      { id: 19, category: 'combate', title: 'Chamar aliados para lutar juntos', description: 'Na aba de personagem, use Chamar para a mulher da rapieira e o porradeiro lutarem ao seu lado em vez de trocar de personagem.' },
+      { id: 20, category: 'combate', title: 'Viagem Rápida (TP) em Combate', description: 'Ative a habilidade Storm Veil (elemento de vento) para conseguir abrir o mapa e dar TP na cara dos inimigos.' },
+      { id: 21, category: 'combate', title: 'Cubos de Laser do Abismo como arma', description: 'Jogue os cubos de laser do Abismo lá para baixo no mapa, pegue-os e use contra NPCs (salve antes!) ou contra chefes rejogáveis.' },
+
+      // CATEGORIA 2: 🧭 Exploração, Mapa e Puzzles (22 a 47)
+      { id: 22, category: 'exploracao', title: 'TP para Totens (e como achá-los)', description: 'Dá para teletransportar também para os totens próximos aos portais. Estando no portal, use o Defletir da espada para fazê-los piscar mais forte.' },
+      { id: 23, category: 'exploracao', title: 'TP mais rápido (Portal para Portal)', description: 'Dar TP estando em cima de outro portal pula a animação de caminhada e entra numa tela preta de carregamento bem mais rápida.' },
+      { id: 24, category: 'exploracao', title: 'Tocar Sinos nas cidades grandes', description: 'Escale a torre principal de cada cidade grande e toque o sino no topo para revelar pontos de interesse no mapa.' },
+      { id: 25, category: 'exploracao', title: 'Corvos no céu', description: 'Corvos voando em círculos indicam segredos abaixo (geralmente memórias para ler com o capacete Visione).' },
+      { id: 26, category: 'exploracao', title: 'Achar Memórias sem Lanterna', description: 'Quando a lanterna piscar azul, use o Defletir da espada girando em volta — as memórias aparecem automaticamente para ler com o Visione.' },
+      { id: 27, category: 'exploracao', title: 'Queimar espinhos gigantes', description: 'Use o Defletir da espada (luz solar) em vez de gastar flechas de fogo.' },
+      { id: 28, category: 'exploracao', title: 'Destruir Plantas Roxas (sugadoras de vida)', description: 'São imunes a cortes comuns e fogo; destrua usando ataques imbuídos com dano de Raio (elétrico).' },
+      { id: 29, category: 'exploracao', title: 'Atravessar Cachoeiras (Baús Raros)', description: 'Use a habilidade Empalar (nível 1 já serve) contra a queda d\'água. Pilhas de pedras na entrada sinalizam onde há segredo.' },
+      { id: 30, category: 'exploracao', title: 'Paredes Secretas + Truque do Chapéu de Pirata', description: 'Igrejas de vilarejos pequenos escondem paredes falsas (encoste e empurre). Desative "Esconder Elmo" e equipe o Chapéu de Pirata — as penas brilham forte quando há itens valiosos por perto.' },
+      { id: 31, category: 'exploracao', title: 'Baús Secretos no Abismo', description: 'Use o Chapéu de Pirata no Abismo e procure em plataformas/quadrados isolados fora do caminho (dão equipamentos raros e até flechas infinitas).' },
+      { id: 32, category: 'exploracao', title: 'Evitar cair do Abismo (Anti-queda)', description: 'Se cair num puzzle do Abismo, aperte [[L3]] (garra) para grudar no ar e depois abra o Mapa para subir automaticamente de volta sem perder o progresso.' },
+      { id: 33, category: 'exploracao', title: 'Burlar Puzzles no Abismo (Axion Voando)', description: 'Use o Axion nos núcleos do Abismo enquanto voa para manobrar por mais tempo no ar e evitar plataformas quebráveis.' },
+      { id: 34, category: 'exploracao', title: 'Puzzle dos Pilares na marra', description: 'Use o Palm para forçar pilares para baixo e alinhá-los sem perder tempo girando mecanismos.' },
+      { id: 35, category: 'exploracao', title: 'Puzzle dentro do Puzzle (Santuários)', description: 'Nos mecanismos usados para purificar santuários das bruxas, use o Defletir da espada e gire — ele abre e dá runas/pedras elementais.' },
+      { id: 36, category: 'exploracao', title: 'Subir mais alto voando (Estocada Aérea)', description: 'Execute o golpe de Estocada enquanto voa para ganhar altitude e alcançar montanhas/beiradas.' },
+      { id: 37, category: 'exploracao', title: 'Modo Focar Voando', description: 'No ar, dá para usar Palm, garras e Modo Focar + impulso ([[B]]) para ganhar velocidade extrema (obs.: sofreu nerf em atualização posterior).' },
+      { id: 38, category: 'exploracao', title: 'Pulo longo na escalada', description: 'O alcance do pulo aumenta muito enquanto escala — escale um trecho, ilumine o destino com a lanterna e pule.' },
+      { id: 39, category: 'exploracao', title: 'Estandarte como vara de salto', description: 'Roube estandartes de acampamentos (ou compre com moedas de moral) para saltar lugares altos (combando com Palm no ar) economizando vigor.' },
+      { id: 40, category: 'exploracao', title: 'Sair da água sem vigor', description: 'Se ficar sem estamina na água, use o Palm para baixo para saltar para fora e alcance terra firme com a lanterna ou garra.' },
+      { id: 41, category: 'exploracao', title: 'Velocidade de Ataque acelera tudo', description: 'Bônus de velocidade de ataque na arma equipada fazem o Kliff correr, escalar, voar e girar manivelas muito mais rápido.' },
+      { id: 42, category: 'exploracao', title: 'Minerar com Palm (1 hit)', description: 'Não precisa equipar picareta; o Palm quebra rochas/minérios com um golpe (no chão ou escalando).' },
+      { id: 43, category: 'exploracao', title: 'Minerar escalando com a Broca', description: 'Para maior extração em paredes, equipe a broca e aperte [[RB + RT]] (ataque fraco + forte juntos) de frente para o minério.' },
+      { id: 44, category: 'exploracao', title: 'Lanterna destaca minérios', description: 'Em cavernas escuras, rochas mineráveis exibem listras azuladas e brilham mais forte sob a lanterna.' },
+      { id: 45, category: 'exploracao', title: 'Pontinhos Brancos no Mapa', description: 'Marcam armas especiais/valiosas (ativam cutscene ao coletar — ex.: Lança Flamejante na região vulcânica do clã dos ursos).' },
+      { id: 46, category: 'exploracao', title: 'Cubos do Abismo Pretos (Bloqueados)', description: 'Encontrados em altares de reza; inspecione no inventário para ver o desafio. Concluir libera 1 Cubo do Abismo.' },
+      { id: 47, category: 'exploracao', title: 'Limites do Mapa e Áreas de Possível DLC', description: 'Tentar sair do mapa dispara eventos (corvos te teleportam em terra; interação especial no mar). Há duas áreas prontas atrás da barreira de cronômetro: um castelo em Sunbake Peaks (Deserto Carmesim) com itens coletáveis e uma vila no nevoeiro acima de Silver Mountain (Pailune).' },
+
+      // CATEGORIA 3: 💰 Farm, Dinheiro e Economia (48 a 64)
+      { id: 48, category: 'farm', title: 'Venda Barras de Ouro no Banco', description: 'NPCs comuns pagam 190 pratas; o Banqueiro paga 500 pratas por barra (mais que o dobro).' },
+      { id: 49, category: 'farm', title: 'Farm de Maçãs de Ouro (Porquinhos)', description: 'Em vez de mirar arco nos porquinhos das vilas, use o Defletir da espada — eles se assustam e largam as maçãs na hora (funciona em vários de uma vez).' },
+      { id: 50, category: 'farm', title: 'Farm Infinito de Artefatos (Gigante de Gelo)', description: 'Em The Argent Peaks (neve), use Axion para puxar o núcleo do Gigante de Gelo, derreta-o em poucos golpes para encher XP (1 barra = 1 Artefato). NÃO sele o núcleo (deixe a Mochila Kuku no acampamento), dê TP no portal ao lado e repita infinitamente.' },
+      { id: 51, category: 'farm', title: 'Farm de Artefatos (Pickpocket no Instituto)', description: 'Com a máscara equipada, esbarre no NPC do Instituto que carrega 1 Artefato, salve, dê TP para fora e volte para dar refresh (sujeito a nerf).' },
+      { id: 52, category: 'farm', title: 'Comprar Artefatos na estrada', description: 'Sempre pare para falar com comerciantes ambulantes (mochila gigante nas costas) — muitos vendem Artefatos do Abismo.' },
+      { id: 53, category: 'farm', title: 'Respawn Infinito de Inimigos e Drops', description: 'Ao invadir bases inimigas, não zere a barra de limpeza do acampamento. Mate boa parte, pegue loot/XP, dê TP e volte para todos respawnarem.' },
+      { id: 54, category: 'farm', title: 'Plantar Esferas do Abismo', description: 'Abra a esfera para extrair a semente e plante na horta do acampamento para farm quase infinito.' },
+      { id: 55, category: 'farm', title: 'Dobrar colheita da Horta', description: 'Aplique Água + Fertilizante juntos ao plantar — rende 5 ou mais itens em vez de 2–3. (Fertilizante: missões da Família Celeste, Lab. da Aranha e missões de pesca no navio pirata).' },
+      { id: 56, category: 'farm', title: 'Farm de Mercúrio sem Magia de Gelo', description: 'Pegue o Jato de Gelo de inimigos perto do boss Escuridão Gélida na torre (use ataque de escudo para derrubar das costas). Pulverize nas poças de mercúrio líquido (perto de Pailune) para congelar tudo, bata com espada e colete tudo de uma vez.' },
+      { id: 57, category: 'farm', title: 'Mercúrio e Enxofre Grátis (Instituto Scholarstone)', description: 'Presenteie NPCs aleatórios do Instituto (eles adoram peles de animais e bolsas de cobre) até 100 de confiança — eles retribuem quase sempre com Enxofre e Mercúrio.' },
+      { id: 58, category: 'farm', title: 'Farm de Comida Infinita (Capítulo 9)', description: 'No Deserto Carmesim, bem na letra "M" de Crimson Desert, pegue os alimentos nos cestos do pequeno acampamento, dê TP e volte para respawnar infinitamente.' },
+      { id: 59, category: 'farm', title: 'Não venda Caixinhas fechadas', description: 'Caixas de madeira/adornadas de casas e igrejas podem ser abertas no inventário — dropam anéis e colares ótimos para vender ou fundir upgrades.' },
+      { id: 60, category: 'farm', title: 'Rasgue Sacos espalhados', description: 'Sacos em cidades e acampamentos dropam comidas, anéis e brincos quando cortados com arma ou flecha.' },
+      { id: 61, category: 'farm', title: 'Tesouro de +60 Barras de Ouro "Enferrujado"', description: 'No Ninho das Harpias (próximo a Pailune); valem menos que barras originais, mas a quantidade garante ótima prata.' },
+      { id: 62, category: 'farm', title: 'Barra de Ouro Grátis em Hernand', description: 'Na Mansão Lioncest (noroeste), 1º andar, sala de estar — equipe a máscara e interaja com a lareira.' },
+      { id: 63, category: 'farm', title: 'Caçada Dupla de Bandidos', description: 'Carregue 2 bandidos de uma vez para a cadeia (1 na garupa do cavalo e 1 no ombro).' },
+      { id: 64, category: 'farm', title: 'Capturar Bandidos sem Matar', description: 'Se o procurado lutar, não bata (nem no soco). Agache perto dele para aparecer a interação de Agarrar e amarrar, garantindo a recompensa integral.' },
+
+      // CATEGORIA 4: 🏕️ Acampamento, Despacho e Pesquisas (65 a 78)
+      { id: 65, category: 'acampamento', title: 'Portal Secreto ao lado da Casa', description: 'Queime os galhos escondidos ao lado da casa no acampamento. Conserte usando um Transportador Abissal — o mais fácil está na Pedreira Karen (missão da família Roberts): quebre a parede interna com Palm + Foco (requer Jarro Kuku do Cap. 4 para selar). Encaixe no portal dando um golpe.' },
+      { id: 66, category: 'acampamento', title: 'Buffs Escondidos no Acampamento', description: 'Atrás da cabana principal do Kliff há uma Pedra de Forja (+defesa) e um Rebolo (+ataque) para usar antes de missões e chefes.' },
+      { id: 67, category: 'acampamento', title: 'Caldeirão, Forno e Tachão na Casa', description: 'Compre esses itens em marceneiros (Hernand, Pailune etc.) e coloque na casa para preparar pílulas, poções e comidas fortes num só lugar.' },
+      { id: 68, category: 'acampamento', title: 'Geladeira e Baú contam no Crafting', description: 'Guarde todos os insumos na geladeira e no baú da casa — eles aparecem automaticamente ao cozinhar em qualquer lugar, liberando slots na mochila.' },
+      { id: 69, category: 'acampamento', title: 'Fazenda = Ovos Infinitos', description: 'Coloque várias galinhas na fazenda (geram 50–60 ovos/dia direto no baú), além de outros animais para leite, carne e ossos.' },
+      { id: 70, category: 'acampamento', title: 'Doar nas Igrejas (Dinheiro do Acampamento)', description: 'Usa o dinheiro do próprio acampamento, limpa crimes, aumenta o lucro das operações e concede buffs para as funções dos Jubas Cinzentas.' },
+      { id: 71, category: 'acampamento', title: 'Barras de Ouro e Receitas via Despacho', description: 'Evoluindo o acampamento e doando nas igrejas, surgem despachos em ruínas (como Timewarm e Broading) que trazem barras de ouro, artefatos e receitas raras direto pro baú.' },
+      { id: 72, category: 'acampamento', title: 'Despacho Instantâneo (Tirar Mapa 3D)', description: 'Vá em Configurações → Gameplay e desative "Entrada das informações 3D do mapa" para abrir e enviar despachos instantaneamente, sem loading 3D.' },
+      { id: 73, category: 'acampamento', title: 'Não cancele Despacho para entregar Quest', description: 'Se um Juba Cinzenta estiver trabalhando fora, vá até o local onde ele está e entregue o item lá mesmo (sem perder recursos).' },
+      { id: 74, category: 'acampamento', title: 'Jubas Cinzentas ativos no mundo', description: 'Companheiros enviados em despachos aparecem fisicamente construindo ou lutando no mapa — você pode ir lá ajudar.' },
+      { id: 75, category: 'acampamento', title: 'Segredo da Carroça do Yann', description: 'Na quest de levar suprimentos até os astronautas da Artemis, não dirija de volta; volte ao acampamento e convoque a carroça falando com o NPC responsável.' },
+      { id: 76, category: 'acampamento', title: 'Todas as Tinturas em um só lugar', description: 'Avance nas missões do acampamento para recrutar o NPC de tinturas — ele centraliza todas as cores que você já usou em outras regiões.' },
+      { id: 77, category: 'acampamento', title: 'Priorize Pesquisas (Obrigatório no Late Game)', description: 'Faça missões de observação nos centros de pesquisa (Vila Pororim, Instituto etc.). Liberam flechas infinitas, upgrades da broca e destravam limites para upar Vitalidade, Vigor e Espírito.' },
+      { id: 78, category: 'acampamento', title: 'Checar Pesquisas pela Aba de Despacho', description: 'Veja andamento, bônus e se alguma pesquisa foi interrompida direto pela aba de Despacho, sem precisar dar TP até lá.' },
+
+      // CATEGORIA 5: ⚒️ Crafting, Forja e Culinária (79 a 88)
+      { id: 79, category: 'crafting', title: 'Pílula de Palma Refinada (100% HP) SEM Receita', description: 'Qualquer item pode ser feito sem receita se você souber os ingredientes. No caldeirão (Criar), junte: 1 Folha de Palma + 1 Besouro de Palma (árvore na Vila Pororim) + 1 Chifre Longo (cervos machos) + 1 Água. Após fazer 3–4, você aprende a receita de graça.' },
+      { id: 80, category: 'crafting', title: 'Caldeirão fácil em Hernand', description: 'Não precisa viajar até a Caverna da Bruxa no início — existe um caldeirão dentro da primeira cidade (Hernand), cercado de ervas e tavernas.' },
+      { id: 81, category: 'crafting', title: 'Água fácil nos Poços', description: 'Após patch, a coleta nos poços foi simplificada e rende 5 águas por coleta.' },
+      { id: 82, category: 'crafting', title: 'Cozinhar sem Fogueira', description: 'Jogue os alimentos no chão e use o Defletir da espada (luz solar) ou coloque perto de qualquer fogo/madeira queimando.' },
+      { id: 83, category: 'crafting', title: 'Comidas Mais Potentes (Multiplicar Cura)', description: 'Na tela de cozinhar, aperte [[RB]]/[[LB]] (ou [[R1]]/[[L1]]) para deslizar para o lado e escolher versões mais fortes da mesma receita (usa mais ingredientes e cura bem mais HP — ex.: ovos de 200 HP).' },
+      { id: 84, category: 'crafting', title: 'Refinar com Itens Duplicados', description: 'Armas, armaduras, ferramentas, colares, brincos e itens do Abismo (nas bruxas) podem ser melhorados fundindo cópias do mesmo nível (+1 com +1 vira +2), sem gastar minérios raros. Não venda duplicados úteis.' },
+      { id: 85, category: 'crafting', title: 'Turbinar a Broca de Mineração (Até 5 Slots)', description: 'Libere até 5 slots na broca nas bruxas e equipe Equipamentos do Abismo (combine nas bruxas para obter bônus de minério extra) — extrai 5 a 6 minérios de uma vez.' },
+      { id: 86, category: 'crafting', title: 'Cortar Madeira Rápido com o Leque', description: 'Derrube 3–4 árvores de uma vez com o Leque da Bruxa (ou ataque forte/flecha) para virarem troncos e só depois use o machado para pegar madeiras perfeitas.' },
+      { id: 87, category: 'crafting', title: 'Coleta de Ervas em Área (Foice Mágica vs. Mochila Kuku)', description: 'Foice Mágica (mais fácil): faça a 3ª pesquisa da 2ª linha na Vila Pororim para liberar o despacho dela (também libera a Vara de Pesca Pororim). Colhe ervas e árvores; se quebrar, basta mandar outro despacho. Mochila de Jardinagem Kuku: avance até o Ato 5, liberte a bruxa, limpe o Sacrário da Penitência e produza na Kilden Workshop em Hernand.' },
+      { id: 88, category: 'crafting', title: 'Upgrade Secreto do Peitoral da Armadura Maldição Gélida', description: 'Complete o Cap. 4 → ajude a Bruxa da Humildade (ponte quebrada em Pailune → caverna na Marcha da Serpente) e limpe os 4 sacrários (Devoção) pegando os núcleos → fale com a Bruxa da Benevolência (Pailune) e faça o Sacrário da Exaltação → crafte o peitoral aprimorado com Pote Kuku + Peitoral + Núcleo da Exaltação + Núcleo de Serpente de Pedra para liberar o refino no ferreiro.' },
+
+      // CATEGORIA 6: 🎒 Inventário, Menus e Atalhos (89 a 98)
+      { id: 89, category: 'inventario', title: 'Organizar Inventário e Tela de Venda', description: 'Aperte [[R3]] no inventário aberto e também enquanto vende para NPCs para agrupar por categoria e localizar itens repetidos rapidamente.' },
+      { id: 90, category: 'inventario', title: 'Bloquear Itens no Inventário', description: 'Tranque itens importantes para evitar vendê-los por acidente.' },
+      { id: 91, category: 'inventario', title: 'Coletar Tudo e Desamarrar andando', description: 'Ande segurando [[X]] para recolher loot automaticamente pelo chão e libertar prisioneiros sem desequipar armas (cuidado em florestas para não encher a bolsa de insetos).' },
+      { id: 92, category: 'inventario', title: 'Ver Materiais de Forja pelo Inventário', description: 'Selecione o equipamento → Inspecionar Detalhes para ver todos os materiais necessários do nível 1 ao máximo sem visitar o ferreiro.' },
+      { id: 93, category: 'inventario', title: 'Ver Status e Buffs Ativos na Hora', description: 'Em Detalhes / Inspecionar, cheque o dano real, crítico, defesa e cura válidos naquele exato momento (muda conforme a arma está na mão ou guardada).' },
+      { id: 94, category: 'inventario', title: 'Aba Conhecimento e Notificação', description: 'Documentos e memórias marcam pontos secretos automaticamente no mapa. Use a aba Notificação (ao lado de Conhecimento) como histórico para localizar o ponto exato de tudo o que desbloqueou.' },
+      { id: 95, category: 'inventario', title: 'Filtro de Mapa de A a Z', description: 'Pesquise qualquer local/recurso por letra (ex.: "F" para todas as fazendas) e ative/desative marcadores específicos.' },
+      { id: 96, category: 'inventario', title: 'Ver Estoque de Lojas à Distância', description: 'Com 100 de confiança num comerciante, aponte para ele no mapa e aperte Estado de Estoque para ver itens e reposições de qualquer lugar.' },
+      { id: 97, category: 'inventario', title: 'Acelerar Diálogos', description: 'Ative o Modo Focar durante conversas com NPCs para acelerar a velocidade das falas.' },
+      { id: 98, category: 'inventario', title: 'Dividir Tela no PC (Multitarefa)', description: 'Mesmo em tela cheia, arraste as bordas da janela com o mouse para encolher/esticar o jogo e manter guias ou mapas abertos ao lado.' },
+
+      // CATEGORIA 7: 🐴 Montarias, Pets e Caça (99 a 114)
+      { id: 99, category: 'montarias', title: 'Curar o Cavalo sem Tônico', description: 'Se o cavalo ferido não conseguir correr, use o Palm mirando nele (cura aliados).' },
+      { id: 100, category: 'montarias', title: 'Upar o Cavalo mais rápido', description: 'Fazer carinho no cavalo acelera bastante o ganho de nível para liberar habilidades.' },
+      { id: 101, category: 'montarias', title: 'Economizar Estamina do Cavalo', description: 'Não esmague o botão de acelerar; pressione no timing exato em que a barra de vigor cai.' },
+      { id: 102, category: 'montarias', title: 'Drift com o Cavalo', description: 'Corra rápido e aperte [[R3]].' },
+      { id: 103, category: 'montarias', title: 'Pular Penhascos sem medo', description: 'Pode saltar penhascos com o cavalo e planar/usar Palm — ele não morre e continua disponível para chamar.' },
+      { id: 104, category: 'montarias', title: 'Domar Cavalos fácil (Truque da Câmera)', description: 'Levante a câmera totalmente de cima para baixo e não mexa mais nela; só gire o analógico acompanhando para onde o traseiro do cavalo está indo (essencial para cavalos lendários).' },
+      { id: 105, category: 'montarias', title: 'Domar Urso', description: 'Lute primeiro e abaixe o HP dele até ficar tonto; só então aparece a interação para montar e domar.' },
+      { id: 106, category: 'montarias', title: 'Cavalo Mecânico debaixo d\'água', description: 'O cavalo mecânico (estábulo de Delysia) permite cavalgar submerso sem perder HP ou estamina (possível bug sujeito a correção).' },
+      { id: 107, category: 'montarias', title: 'Elefante Gigante montável', description: 'Spawna nos arredores do Circo de Demeniss (montaria temporária, não permanente).' },
+      { id: 108, category: 'montarias', title: 'Segurar Comida na Mão', description: 'No inventário, segure o botão de consumir → Retirar para segurar o alimento na mão (ótimo para domar montarias selvagens e alimentar pets).' },
+      { id: 109, category: 'montarias', title: 'Adotar Pets mais rápido', description: 'Dê Ossos para cães e Peixes para gatos (~25+ pontos de moral, contra 5 do carinho).' },
+      { id: 110, category: 'montarias', title: 'Soltar Pets sem perder Confiança', description: 'Para diminuir os latidos no acampamento, solte o pet na aba de pets; ele volta ao local de origem mantendo 100% de confiança para readotar na hora quando quiser.' },
+      { id: 111, category: 'montarias', title: 'Renomear Pets de qualquer lugar', description: 'Na aba de pets, aponte para o animal e aperte [[G]] (PC) ou [[L3]] (controle).' },
+      { id: 112, category: 'montarias', title: 'Caça de Cervos com 1 Flecha', description: 'Use o arco em cima do cavalo — abate com 1 flecha em vez de 3–4 a pé (excelente para farmar Chifre Longo).' },
+      { id: 113, category: 'montarias', title: 'Localização de TODOS os Animais Lendários', description: 'Faça a quest secundária em Hernand (esposa pedindo para achar um soldado atacado por lobos) e derrote o Lobo Lendário Negro — o glossário passa a mostrar onde está cada criatura lendária do jogo.' },
+      { id: 114, category: 'montarias', title: 'Pesca Manual sem Vara', description: 'Mergulhe no lago e nade junto aos peixes para pegá-los com a mão.' },
+
+      // CATEGORIA 8: 🗝️ Itens Secretos, Habilidades Grátis e Localizações (115 a 138)
+      { id: 115, category: 'segredos', title: 'Habilidade Grátis — Ataque Giratório e Ataque Frontal', description: 'Use "Aprender" no exército treinando acima de Hernand (economize Artefatos — se já comprou, resete os pontos).' },
+      { id: 116, category: 'segredos', title: 'Habilidade Grátis — Ataque Instantâneo', description: 'Use "Aprender" nos dois guerreiros com alabarda atrás do castelo na Mansão Leobrasa.' },
+      { id: 117, category: 'segredos', title: 'Habilidade Grátis — Salto Duplo', description: 'Use "Aprender" nas três crianças na Vila Pororim.' },
+      { id: 118, category: 'segredos', title: 'Habilidade Grátis — Golpes de Artes Marciais', description: 'Use "Aprender" nas três crianças treinando em Hernand.' },
+      { id: 119, category: 'segredos', title: 'Habilidade Grátis — Escudo dos Ventos', description: 'Resolva o puzzle logo acima das letras "N" e "D" de Hernand para aprender de graça.' },
+      { id: 120, category: 'segredos', title: 'Habilidade Grátis — Tiro Carregado (Perfura-Vento)', description: 'Aprenda de graça com o arqueiro do desafio de arco na Mansão Leobrasa (Hernand).' },
+      { id: 121, category: 'segredos', title: 'Bolsa de +10 Slots a cada 7 Dias', description: 'Pegue a bolsa grátis e anote o dia/horário no jogo — ela reaparece exatamente 7 dias depois no ciclo comercial.' },
+      { id: 122, category: 'segredos', title: 'Leque da Bruxa (Muda Clima + Corta Árvores)', description: 'À direita das letras "Marcha da Serpente", abaixo na lateral do lago; quebre a caverna fechada com Palm + Foco. Equipe no [[Direcional Direito]] e aperte [[LT + RT]] para limpar chuva/nuvens na hora.' },
+      { id: 123, category: 'segredos', title: 'Elmo de Vida (Ver HP de inimigos comuns)', description: 'À direita de Delysia (rumo da letra "A"), no Laboratório de Marning → siga até a engrenagem, vire à esquerda (sobre um banquinho).' },
+      { id: 124, category: 'segredos', title: 'Elmo do Conhecimento (Escaneia pontos de aprendizado)', description: 'Parte superior da Biblioteca do Instituto. Aperte [[LT + RT]] para câmera lenta com partículas azuis revelando pontos de aprendizado.' },
+      { id: 125, category: 'segredos', title: 'Melhorar Elmo Visione', description: 'Avance até a 3ª parte da pesquisa no Instituto de Delysia para melhorar e mudar o visual dele.' },
+      { id: 126, category: 'segredos', title: 'Vara de Pesca Infalível ("The Claw" / A Garra)', description: 'Suba para 100 a confiança de Patuídio (mercador da loja secreta); ela fisga peixes automaticamente sem minigame.' },
+      { id: 127, category: 'segredos', title: 'Chapéu de Ver Cartas (Ganhar Sempre nas Apostas)', description: 'Derrote Muskan na arena de Takalp → dê TP e volte → suba para 100 a confiança do comerciante de minerais que aparece lá para comprar o chapéu (revela cartas do rival e o nome da combinação).' },
+      { id: 128, category: 'segredos', title: 'Botas Quebra-Maré (Nadar com Impulso)', description: 'Abaixo de Delysia, entre as letras L e E, numa cachoeira em frente aos trilhos de trem.' },
+      { id: 129, category: 'segredos', title: 'Botas Caminhante do Vapor (Deslizar em águas rasas)', description: 'Caverna do Coração Antigo, cachoeira mais curta/estreita, abaixo das pedras — quebre a parede com Palm.' },
+      { id: 130, category: 'segredos', title: 'Lâminas Ocultas de Assassin\'s Creed', description: 'Acima da letra "N" de Demeniss, escale a pequena torre, abra a porta no topo e pegue no baú.' },
+      { id: 131, category: 'segredos', title: 'Novo Pet — Fênix', description: 'Acima de "Crimson Desert" e antes de "Traders Spence"; abata com flecha e entregue o drop à Bruxa em Hernand.' },
+      { id: 132, category: 'segredos', title: 'Novo Pet — Gato Abissal', description: 'Em The Path of Providence (Abismo), siga reto até o portão principal (cantinho direito).' },
+      { id: 133, category: 'segredos', title: 'Comerciante Secreto nos Céus (Galleon)', description: 'Vende artefatos, peças mecânicas e runas raras num dirigível acima de Delysia (entre H e A de Gortak). Acesse de dragão ou pela quest Corredor Eterno (Arquipélago Pilar Celeste).' },
+      { id: 134, category: 'segredos', title: 'Comerciante Secreta na Vila Pororim', description: 'Circula pela vila de manhã/dia (perto do centro de pesquisa ou centro da vila); vende Pílulas de Palma e colares para gato.' },
+      { id: 135, category: 'segredos', title: 'Tintas Secretas em Bancadas', description: 'Agache nos vendedores de entradas de cidades/vilas menores para ver tintas escondidas na parte inferior das bancadas.' },
+      { id: 136, category: 'segredos', title: 'Coroas de Reputação (70 pontos)', description: 'Comprar a coroa da região eleva ainda mais sua reputação e libera itens raros exclusivos (ex.: armadura de cavalo na selaria de Delysia).' },
+      { id: 137, category: 'segredos', title: 'Confiança 100 com Comerciantes', description: 'Presentear e fazer favores até o máximo desbloqueia itens raros exclusivos para compra ou fabricação.' },
+      { id: 138, category: 'segredos', title: 'Arqueiro "Legolas" no Modo Easy', description: 'Reduza as configurações gráficas para o mínimo para diminuir a dificuldade dele e facilitar as vitórias triplas.' },
+
+      // CATEGORIA 9: 🎭 Interações, Furtividade e Easter Eggs (139 a 146)
+      { id: 139, category: 'interacoes', title: 'Explore Arenas de Bosses após vencer', description: 'Itens extras ficam espalhados na arena e não vão pro baú (ex.: capa e lança do Rei Cervo). Use o Chapéu de Pirata e revisite arenas antigas.' },
+      { id: 140, category: 'interacoes', title: 'Interrogue Inimigos em Fuga', description: 'Corra ou role perto de inimigos fugindo para agarrar e interrogar — eles podem revelar bosses secretos, itens raros ou bandidos procurados (confira na aba Notificação).' },
+      { id: 141, category: 'interacoes', title: 'Infiltração Disfarçada (Stealth)', description: 'Vista roupas dropadas pelos inimigos do acampamento + elmo de stealth para circular livremente e abater escondido.' },
+      { id: 142, category: 'interacoes', title: 'Espantar NPCs com Vara de Pescar', description: 'Para roubar sem testemunhas ou tirar um NPC dormindo da cama, lance o anzol perto dele — ele sai assustado sem te gerar crime.' },
+      { id: 143, category: 'interacoes', title: 'Abrir Viseira / Tirar Capuz', description: 'Na aba de equipamentos, interaja sobre elmos com viseira móvel ou capas com capuz para mudar a aparência.' },
+      { id: 144, category: 'interacoes', title: 'Guardar Arma com Estilo', description: 'Aperte [[Direcional Esquerdo 2x]] rápido com armas diferenciadas em mãos.' },
+      { id: 145, category: 'interacoes', title: 'Montar igual ao Legolas', description: 'Chame o cavalo e continue andando; quando ele te acompanhar pelo lado esquerdo, monte nele para fazer a animação de Senhor dos Anéis.' },
+      { id: 146, category: 'interacoes', title: 'Peixes Vivos no Inventário', description: 'Peixes ainda não escamados continuam vivos — se soltá-los num rio, eles saem nadando.' }
+    ];
+
+    // Mapa rápido de categorias por ID
+    const CATEGORY_MAP = Object.fromEntries(CATEGORIES.map(c => [c.id, c]));
+
+    /**
+     * =========================================================================
+     * ESTADO DA APLICAÇÃO & PERSISTÊNCIA (localStorage com proteção try/catch)
+     * =========================================================================
+     */
+    const STORAGE_KEYS = {
+      completed: 'cd_guide_completed_v1',
+      favorites: 'cd_guide_favorites_v1',
+      compact: 'cd_guide_compact_v1'
+    };
+
+    const state = {
+      search: '',
+      category: 'all',
+      status: 'all', // 'all' | 'pending' | 'completed' | 'favorites'
+      compact: false,
+      completed: new Set(),
+      favorites: new Set()
+    };
+
+    function loadPersistedState() {
+      try {
+        const savedCompleted = JSON.parse(localStorage.getItem(STORAGE_KEYS.completed) || '[]');
+        if (Array.isArray(savedCompleted)) {
+          state.completed = new Set(savedCompleted.map(Number));
         }
 
-        // Gera os dados iniciais se não houver nada no localStorage
-        function generateInitialData() {
-            let data = [];
-            for (let i = 0; i < 40; i++) {
-                let currentDate = new Date(startDate);
-                currentDate.setDate(startDate.getDate() + i);
-                
-                let dayOfWeek = currentDate.getDay(); // 0 = Dom, 1 = Seg... 6 = Sáb
-                let dateString = currentDate.toISOString().split('T')[0];
-                let isBillDay = (currentDate.getDate() === 4 && currentDate.getMonth() === 9); // 04/10
+        const savedFavorites = JSON.parse(localStorage.getItem(STORAGE_KEYS.favorites) || '[]');
+        if (Array.isArray(savedFavorites)) {
+          state.favorites = new Set(savedFavorites.map(Number));
+        }
 
-                let tasks = [
-                    { id: crypto.randomUUID(), text: 'Passar o aspirador de pó (focar no quarto)', done: false },
-                    { id: crypto.randomUUID(), text: 'Cuidar do Tom (colocar ração, água nova e limpar areia)', done: false }
-                ];
+        const savedCompact = localStorage.getItem(STORAGE_KEYS.compact);
+        state.compact = savedCompact === 'true';
+      } catch (err) {
+        console.warn('Não foi possível ler dados do localStorage:', err);
+      }
+    }
 
-                if (i % 2 === 0) tasks.push({ id: crypto.randomUUID(), text: 'Jogar água nas plantas de baixo (manhã)', done: false });
-                if (dayOfWeek === 2 || dayOfWeek === 5) tasks.push({ id: crypto.randomUUID(), text: 'Jogar água nas plantas do terraço', done: false });
-                if (dayOfWeek === 1 || dayOfWeek === 3 || dayOfWeek === 5) tasks.push({ id: crypto.randomUUID(), text: 'Tirar lixo para fora (banheiro/cozinha) - esquina', done: false });
-                if (dayOfWeek === 6) {
-                    tasks.push({ id: crypto.randomUUID(), text: 'Trocar roupa de cama e toalhas', done: false });
-                    tasks.push({ id: crypto.randomUUID(), text: 'Colocar cuecas e uniforme na máquina para lavar', done: false });
-                }
-                if (isBillDay) tasks.unshift({ id: crypto.randomUUID(), text: '⚠️ PAGAR CONTAS (Água e Luz)', done: false });
+    function savePersistedState() {
+      try {
+        localStorage.setItem(STORAGE_KEYS.completed, JSON.stringify([...state.completed]));
+        localStorage.setItem(STORAGE_KEYS.favorites, JSON.stringify([...state.favorites]));
+        localStorage.setItem(STORAGE_KEYS.compact, String(state.compact));
+      } catch (err) {
+        console.warn('Não foi possível salvar no localStorage:', err);
+      }
+    }
 
-                data.push({
-                    id: crypto.randomUUID(),
-                    date: dateString,
-                    label: formatDateBR(currentDate),
-                    tasks: tasks,
-                    isOpen: false
-                });
+    /**
+     * =========================================================================
+     * UTILITÁRIOS DE TEXTO, NORMALIZAÇÃO E RENDERIZAÇÃO DE <kbd>
+     * =========================================================================
+     */
+
+    // Remove acentos e converte para minúsculas para busca insensível
+    function normalizeText(str) {
+      return String(str || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase();
+    }
+
+    // Escapa caracteres HTML para segurança ao montar innerHTML
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // Converte marcações [[TECLA]] em elementos <kbd> estilizados com Tailwind
+    function formatDescriptionWithKbd(rawText) {
+      const safe = escapeHtml(rawText);
+      return safe.replace(/\[\[([^\]]+)\]\]/g, (_, keyLabel) => {
+        return `<kbd class="inline-flex items-center px-1.5 py-0.5 mx-0.5 text-[11px] font-mono font-semibold text-goldSoft bg-obsidian border border-gold/40 rounded-md shadow-sm leading-none align-baseline">${keyLabel}</kbd>`;
+      });
+    }
+
+    // Pré-calcula campos normalizados em cada dica para busca instantânea
+    const INDEXED_TIPS = TIPS.map(tip => {
+      const cat = CATEGORY_MAP[tip.category];
+      const plainDesc = tip.description.replace(/\[\[|\]\]/g, '');
+      return {
+        ...tip,
+        categoryName: cat ? cat.name : '',
+        categoryIcon: cat ? cat.icon : '',
+        searchIndex: normalizeText(`${tip.id} ${tip.title} ${plainDesc} ${cat ? cat.name : ''}`),
+        formattedHtml: formatDescriptionWithKbd(tip.description)
+      };
+    });
+
+    /**
+     * =========================================================================
+     * REFERÊNCIAS DO DOM
+     * =========================================================================
+     */
+    const els = {
+      searchInput: document.getElementById('search-input'),
+      searchHint: document.getElementById('search-shortcut-hint'),
+      btnClearSearch: document.getElementById('btn-clear-search'),
+      btnCompact: document.getElementById('btn-compact'),
+      compactLabel: document.getElementById('compact-label'),
+      btnReset: document.getElementById('btn-reset'),
+      progressCount: document.getElementById('progress-count'),
+      progressPercent: document.getElementById('progress-percent'),
+      progressBar: document.getElementById('progress-bar'),
+      statusPills: document.querySelectorAll('.status-pill'),
+      categoryPills: document.getElementById('category-pills'),
+      resultsSummary: document.getElementById('results-summary'),
+      tipsContainer: document.getElementById('tips-container'),
+      emptyState: document.getElementById('empty-state'),
+      btnClearAllFilters: document.getElementById('btn-clear-all-filters'),
+      btnScrollTop: document.getElementById('btn-scroll-top'),
+      resetModal: document.getElementById('reset-modal'),
+      resetIncludeFavs: document.getElementById('reset-include-favorites'),
+      btnCancelReset: document.getElementById('btn-cancel-reset'),
+      btnConfirmReset: document.getElementById('btn-confirm-reset'),
+      toast: document.getElementById('toast')
+    };
+
+    let toastTimer = null;
+    function showToast(message) {
+      els.toast.textContent = message;
+      els.toast.classList.remove('opacity-0', 'translate-y-2');
+      els.toast.classList.add('opacity-100', 'translate-y-0');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        els.toast.classList.remove('opacity-100', 'translate-y-0');
+        els.toast.classList.add('opacity-0', 'translate-y-2');
+      }, 2200);
+    }
+
+    /**
+     * =========================================================================
+     * LÓGICA DE FILTRAGEM E RENDERIZAÇÃO
+     * =========================================================================
+     */
+    function getFilteredTips({ ignoreCategory = false, ignoreStatus = false } = {}) {
+      const normalizedQuery = normalizeText(state.search.trim());
+      const queryTokens = normalizedQuery ? normalizedQuery.split(/\s+/).filter(Boolean) : [];
+
+      return INDEXED_TIPS.filter(tip => {
+        if (!ignoreCategory && state.category !== 'all' && tip.category !== state.category) {
+          return false;
+        }
+
+        if (!ignoreStatus) {
+          const isDone = state.completed.has(tip.id);
+          const isFav = state.favorites.has(tip.id);
+          if (state.status === 'pending' && isDone) return false;
+          if (state.status === 'completed' && !isDone) return false;
+          if (state.status === 'favorites' && !isFav) return false;
+        }
+
+        if (queryTokens.length > 0) {
+          for (let i = 0; i < queryTokens.length; i++) {
+            if (!tip.searchIndex.includes(queryTokens[i])) {
+              return false;
             }
-            return data;
+          }
         }
 
-        function saveData() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
-            render();
+        return true;
+      });
+    }
+
+    function updateProgressBar() {
+      const total = INDEXED_TIPS.length;
+      const done = state.completed.size;
+      const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+      els.progressCount.textContent = `${done} / ${total}`;
+      els.progressPercent.textContent = `${pct}%`;
+      els.progressBar.style.width = `${pct}%`;
+    }
+
+    function updateCompactButton() {
+      els.btnCompact.setAttribute('aria-pressed', String(state.compact));
+      if (state.compact) {
+        els.btnCompact.classList.add('bg-gold/15', 'border-gold/60', 'text-goldSoft');
+        els.btnCompact.classList.remove('bg-graphite', 'border-borderSubtle', 'text-parchment');
+        els.compactLabel.textContent = 'Modo Compacto: ON';
+      } else {
+        els.btnCompact.classList.remove('bg-gold/15', 'border-gold/60', 'text-goldSoft');
+        els.btnCompact.classList.add('bg-graphite', 'border-borderSubtle', 'text-parchment');
+        els.compactLabel.textContent = 'Modo Compacto';
+      }
+    }
+
+    function renderStatusFilters() {
+      const baseList = getFilteredTips({ ignoreStatus: true });
+      const counts = {
+        all: baseList.length,
+        pending: baseList.filter(t => !state.completed.has(t.id)).length,
+        completed: baseList.filter(t => state.completed.has(t.id)).length,
+        favorites: baseList.filter(t => state.favorites.has(t.id)).length
+      };
+
+      els.statusPills.forEach(btn => {
+        const statusKey = btn.dataset.status;
+        const countEl = btn.querySelector(`[data-status-count="${statusKey}"]`);
+        if (countEl) countEl.textContent = counts[statusKey];
+
+        const active = state.status === statusKey;
+        btn.className = `status-pill px-3 py-2 rounded-xl text-xs font-medium border transition cursor-pointer ${
+          active
+            ? (statusKey === 'favorites'
+                ? 'bg-gold/20 border-gold text-goldSoft shadow-goldGlow'
+                : 'bg-crimson border-crimsonBright text-white shadow-crimsonGlow')
+            : 'bg-graphite border-borderSubtle text-ash hover:text-white hover:border-borderSubtle/90 hover:bg-graphiteHover'
+        }`;
+      });
+    }
+
+    function renderCategoryPills() {
+      // Conta os itens por categoria considerando a busca e o filtro de status atuais
+      const statusAndSearchFiltered = getFilteredTips({ ignoreCategory: true });
+      const categoryCounts = {};
+      CATEGORIES.forEach(c => { categoryCounts[c.id] = 0; });
+      statusAndSearchFiltered.forEach(t => {
+        categoryCounts[t.category] = (categoryCounts[t.category] || 0) + 1;
+      });
+
+      const allActive = state.category === 'all';
+      let html = `
+        <button
+          type="button"
+          data-category="all"
+          class="category-pill inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition cursor-pointer ${
+            allActive
+              ? 'bg-crimson text-white border-crimsonBright shadow-crimsonGlow'
+              : 'bg-graphite text-parchment border-borderSubtle hover:border-gold/50 hover:bg-graphiteHover'
+          }"
+        >
+          <span>Todas</span>
+          <span class="px-1.5 py-0.5 rounded-full text-[10px] font-semibold tabular-nums ${
+            allActive ? 'bg-black/25 text-white' : 'bg-obsidian text-ash'
+          }">${statusAndSearchFiltered.length}</span>
+        </button>
+      `;
+
+      CATEGORIES.forEach(cat => {
+        const isActive = state.category === cat.id;
+        const count = categoryCounts[cat.id] || 0;
+        html += `
+          <button
+            type="button"
+            data-category="${cat.id}"
+            class="category-pill inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition cursor-pointer ${
+              isActive
+                ? 'bg-crimson text-white border-crimsonBright shadow-crimsonGlow'
+                : 'bg-graphite text-parchment border-borderSubtle hover:border-gold/50 hover:bg-graphiteHover'
+            } ${count === 0 && !isActive ? 'opacity-50' : ''}"
+          >
+            <span aria-hidden="true">${cat.icon}</span>
+            <span>${escapeHtml(cat.name)}</span>
+            <span class="px-1.5 py-0.5 rounded-full text-[10px] font-semibold tabular-nums ${
+              isActive ? 'bg-black/25 text-white' : 'bg-obsidian text-ash'
+            }">${count}</span>
+          </button>
+        `;
+      });
+
+      els.categoryPills.innerHTML = html;
+    }
+
+    function createTipCardHtml(tip) {
+      const isDone = state.completed.has(tip.id);
+      const isFav = state.favorites.has(tip.id);
+
+      const cardPadding = state.compact ? 'p-2.5 sm:p-3' : 'p-3.5 sm:p-4';
+      const titleClass = state.compact ? 'text-[13px] leading-snug' : 'text-sm sm:text-[15px] leading-snug';
+      const descClass = state.compact ? 'text-xs leading-relaxed mt-0.5' : 'text-[13px] sm:text-sm leading-relaxed mt-1.5';
+
+      const borderAccent = isFav
+        ? 'border-gold/50 bg-gradient-to-br from-graphite via-graphite to-gold/[0.04]'
+        : 'border-borderSubtle bg-graphite';
+
+      return `
+        <article
+          data-tip-id="${tip.id}"
+          class="group relative rounded-xl border ${borderAccent} ${cardPadding} transition duration-150 hover:border-crimson/50 hover:bg-graphiteHover ${isDone ? 'opacity-65' : ''}"
+        >
+          <div class="flex items-start gap-2.5 sm:gap-3">
+            <!-- Checkbox de Checklist -->
+            <button
+              type="button"
+              data-action="toggle-complete"
+              data-tip-id="${tip.id}"
+              aria-label="${isDone ? 'Desmarcar dica concluída' : 'Marcar dica como concluída'}"
+              aria-pressed="${isDone}"
+              class="mt-0.5 shrink-0 w-6 h-6 rounded-lg border flex items-center justify-center transition cursor-pointer ${
+                isDone
+                  ? 'bg-crimson border-crimsonBright text-white shadow-sm'
+                  : 'bg-obsidian border-borderSubtle hover:border-gold/70 text-transparent'
+              }"
+            >
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </button>
+
+            <!-- Conteúdo da Dica -->
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-2">
+                <h3 class="font-semibold ${titleClass} ${isDone ? 'line-through text-ash' : 'text-white'}">
+                  <span class="inline-block text-[11px] font-mono font-medium text-gold/80 mr-1.5">#${String(tip.id).padStart(3, '0')}</span>${escapeHtml(tip.title)}
+                </h3>
+
+                <!-- Botão de Favorito (Estrela) -->
+                <button
+                  type="button"
+                  data-action="toggle-favorite"
+                  data-tip-id="${tip.id}"
+                  aria-label="${isFav ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}"
+                  aria-pressed="${isFav}"
+                  class="shrink-0 -mt-1 -mr-1 w-8 h-8 rounded-lg flex items-center justify-center transition cursor-pointer ${
+                    isFav
+                      ? 'text-gold bg-gold/10 hover:bg-gold/20'
+                      : 'text-ash/50 hover:text-gold hover:bg-obsidian/70'
+                  }"
+                  title="${isFav ? 'Remover dos favoritos' : 'Favoritar dica'}"
+                >
+                  <svg class="w-4 h-4" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                  </svg>
+                </button>
+              </div>
+
+              <p class="${descClass} ${isDone ? 'text-ash/75' : 'text-parchment/85'} break-words">
+                ${tip.formattedHtml}
+              </p>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderTips() {
+      const filtered = getFilteredTips();
+
+      // Atualiza resumo de resultados
+      els.resultsSummary.textContent = `Exibindo ${filtered.length} de ${INDEXED_TIPS.length} dicas`;
+
+      if (filtered.length === 0) {
+        els.tipsContainer.innerHTML = '';
+        els.emptyState.classList.remove('hidden');
+        return;
+      }
+
+      els.emptyState.classList.add('hidden');
+
+      // Agrupa por categoria respeitando a ordem oficial
+      const grouped = new Map();
+      CATEGORIES.forEach(cat => grouped.set(cat.id, []));
+      filtered.forEach(tip => {
+        grouped.get(tip.category).push(tip);
+      });
+
+      const gridClass = state.compact
+        ? 'grid grid-cols-1 md:grid-cols-2 gap-2'
+        : 'grid grid-cols-1 md:grid-cols-2 gap-3';
+
+      const sectionGap = state.compact ? 'space-y-4' : 'space-y-6';
+      els.tipsContainer.className = `mt-5 ${sectionGap}`;
+
+      let sectionsHtml = '';
+
+      CATEGORIES.forEach(cat => {
+        const list = grouped.get(cat.id);
+        if (!list || list.length === 0) return;
+
+        // Conta quantas da categoria inteira estão concluídas
+        const totalInCat = INDEXED_TIPS.filter(t => t.category === cat.id).length;
+        const doneInCat = INDEXED_TIPS.filter(t => t.category === cat.id && state.completed.has(t.id)).length;
+
+        sectionsHtml += `
+          <section aria-labelledby="cat-heading-${cat.id}">
+            <div class="flex items-center justify-between gap-2 pb-2 mb-2.5 border-b border-borderSubtle/80">
+              <h2 id="cat-heading-${cat.id}" class="font-display text-sm sm:text-base font-bold tracking-wide text-goldSoft flex items-center gap-2 min-w-0">
+                <span aria-hidden="true" class="text-base sm:text-lg">${cat.icon}</span>
+                <span class="truncate">${escapeHtml(cat.name)}</span>
+              </h2>
+              <span class="shrink-0 text-[11px] font-medium text-ash bg-graphite border border-borderSubtle px-2 py-0.5 rounded-md tabular-nums">
+                ${doneInCat}/${totalInCat} feitos
+              </span>
+            </div>
+            <div class="${gridClass}">
+              ${list.map(createTipCardHtml).join('')}
+            </div>
+          </section>
+        `;
+      });
+
+      els.tipsContainer.innerHTML = sectionsHtml;
+    }
+
+    function renderAll() {
+      updateProgressBar();
+      updateCompactButton();
+      renderStatusFilters();
+      renderCategoryPills();
+      renderTips();
+
+      // Visibilidade do botão limpar busca e dica de atalho "/"
+      const hasSearch = state.search.length > 0;
+      els.btnClearSearch.classList.toggle('hidden', !hasSearch);
+      els.btnClearSearch.classList.toggle('flex', hasSearch);
+      els.searchHint.classList.toggle('sm:inline-flex', !hasSearch);
+      els.searchHint.classList.toggle('hidden', hasSearch);
+    }
+
+    /**
+     * =========================================================================
+     * EVENTOS E INTERAÇÕES
+     * =========================================================================
+     */
+
+    // Busca em tempo real
+    els.searchInput.addEventListener('input', (e) => {
+      state.search = e.target.value;
+      renderAll();
+    });
+
+    // Botão X para limpar busca
+    els.btnClearSearch.addEventListener('click', () => {
+      state.search = '';
+      els.searchInput.value = '';
+      els.searchInput.focus();
+      renderAll();
+    });
+
+    // Atalho "/" para focar busca e "Escape" para limpar/fechar modal
+    document.addEventListener('keydown', (e) => {
+      const modalOpen = !els.resetModal.classList.contains('hidden');
+      if (e.key === 'Escape') {
+        if (modalOpen) {
+          closeResetModal();
+          return;
         }
-
-        function loadData() {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) {
-                appData = JSON.parse(saved);
-            } else {
-                appData = generateInitialData();
-                saveData();
-            }
-            
-            // Define o dia atual no cabeçalho e tenta abrir o card de hoje
-            document.getElementById('header-date').innerText = "Hoje é " + formatDateBR(new Date());
-            openTodayCard();
-            render();
+        if (document.activeElement === els.searchInput) {
+          if (state.search) {
+            state.search = '';
+            els.searchInput.value = '';
+            renderAll();
+          } else {
+            els.searchInput.blur();
+          }
         }
+        return;
+      }
 
-        function openTodayCard() {
-            let todayStr = new Date().toISOString().split('T')[0];
-            let found = false;
-            appData.forEach(day => {
-                if (day.date === todayStr) {
-                    day.isOpen = true;
-                    found = true;
-                } else {
-                    day.isOpen = false;
-                }
-            });
+      if (e.key === '/' && !modalOpen && document.activeElement !== els.searchInput) {
+        const tag = document.activeElement ? document.activeElement.tagName : '';
+        if (tag !== 'INPUT' && tag !== 'TEXTAREA') {
+          e.preventDefault();
+          els.searchInput.focus();
+          els.searchInput.select();
         }
+      }
+    });
 
-        function toggleDay(dayId) {
-            let day = appData.find(d => d.id === dayId);
-            day.isOpen = !day.isOpen;
-            saveData();
+    // Filtros de Status
+    els.statusPills.forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.status = btn.dataset.status;
+        renderAll();
+      });
+    });
+
+    // Delegação de clique nas pílulas de categoria
+    els.categoryPills.addEventListener('click', (e) => {
+      const pill = e.target.closest('.category-pill');
+      if (!pill) return;
+      state.category = pill.dataset.category;
+      renderAll();
+    });
+
+    // Delegação de clique nos cards (checklist e favoritos)
+    els.tipsContainer.addEventListener('click', (e) => {
+      const actionBtn = e.target.closest('[data-action]');
+      if (!actionBtn) return;
+
+      const tipId = Number(actionBtn.dataset.tipId);
+      const action = actionBtn.dataset.action;
+
+      if (action === 'toggle-complete') {
+        if (state.completed.has(tipId)) {
+          state.completed.delete(tipId);
+        } else {
+          state.completed.add(tipId);
         }
-
-        function toggleTask(dayId, taskId) {
-            let day = appData.find(d => d.id === dayId);
-            let task = day.tasks.find(t => t.id === taskId);
-            task.done = !task.done;
-            saveData();
+        savePersistedState();
+        renderAll();
+      } else if (action === 'toggle-favorite') {
+        if (state.favorites.has(tipId)) {
+          state.favorites.delete(tipId);
+          showToast('Removido dos favoritos');
+        } else {
+          state.favorites.add(tipId);
+          showToast('Adicionado aos favoritos ⭐');
         }
+        savePersistedState();
+        renderAll();
+      }
+    });
 
-        function addTask(dayId) {
-            let input = document.getElementById(`input-${dayId}`);
-            let text = input.value.trim();
-            if (text) {
-                let day = appData.find(d => d.id === dayId);
-                day.tasks.push({ id: crypto.randomUUID(), text: text, done: false });
-                input.value = '';
-                saveData();
-            }
-        }
+    // Botão Modo Compacto
+    els.btnCompact.addEventListener('click', () => {
+      state.compact = !state.compact;
+      savePersistedState();
+      renderAll();
+      showToast(state.compact ? 'Modo Compacto ativado' : 'Modo Padrão restaurado');
+    });
 
-        function deleteTask(dayId, taskId) {
-            if(confirm('Tem certeza que deseja apagar esta tarefa?')) {
-                let day = appData.find(d => d.id === dayId);
-                day.tasks = day.tasks.filter(t => t.id !== taskId);
-                saveData();
-            }
-        }
+    // Botão Limpar Todos os Filtros (no estado vazio)
+    els.btnClearAllFilters.addEventListener('click', () => {
+      state.search = '';
+      state.category = 'all';
+      state.status = 'all';
+      els.searchInput.value = '';
+      renderAll();
+    });
 
-        function editTask(dayId, taskId) {
-            let day = appData.find(d => d.id === dayId);
-            let task = day.tasks.find(t => t.id === taskId);
-            let newText = prompt('Edite a tarefa:', task.text);
-            if (newText !== null && newText.trim() !== '') {
-                task.text = newText.trim();
-                saveData();
-            }
-        }
+    // Modal de Reset do Checklist (Customizado — sem confirm/alert)
+    function openResetModal() {
+      els.resetIncludeFavs.checked = false;
+      els.resetModal.classList.remove('hidden');
+      els.resetModal.classList.add('flex');
+      els.btnCancelReset.focus();
+    }
 
-        function addNewDay() {
-            let lastDay = appData[appData.length - 1];
-            let nextDate = new Date(lastDay.date);
-            nextDate.setDate(nextDate.getDate() + 1);
-            
-            appData.push({
-                id: crypto.randomUUID(),
-                date: nextDate.toISOString().split('T')[0],
-                label: formatDateBR(nextDate),
-                tasks: [],
-                isOpen: true
-            });
-            saveData();
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-        }
+    function closeResetModal() {
+      els.resetModal.classList.add('hidden');
+      els.resetModal.classList.remove('flex');
+    }
 
-        function calculateProgress(tasks) {
-            if (tasks.length === 0) return 0;
-            let done = tasks.filter(t => t.done).length;
-            return Math.round((done / tasks.length) * 100);
-        }
+    els.btnReset.addEventListener('click', openResetModal);
+    els.btnCancelReset.addEventListener('click', closeResetModal);
 
-        function render() {
-            const container = document.getElementById('app-container');
-            container.innerHTML = '';
+    // Fechar modal clicando fora do diálogo
+    els.resetModal.addEventListener('click', (e) => {
+      if (e.target === els.resetModal) closeResetModal();
+    });
 
-            appData.forEach(day => {
-                let progress = calculateProgress(day.tasks);
-                let progressColor = progress === 100 ? 'bg-green-500' : 'bg-blue-500';
+    els.btnConfirmReset.addEventListener('click', () => {
+      state.completed.clear();
+      if (els.resetIncludeFavs.checked) {
+        state.favorites.clear();
+      }
+      savePersistedState();
+      closeResetModal();
+      renderAll();
+      showToast(els.resetIncludeFavs.checked ? 'Checklist e favoritos resetados' : 'Checklist resetado com sucesso');
+    });
 
-                let dayCard = document.createElement('div');
-                dayCard.className = 'mb-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden';
-                
-                // Header do Dia (Clicável)
-                let header = `
-                    <div class="p-4 flex justify-between items-center cursor-pointer bg-gray-50 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors" onclick="toggleDay('${day.id}')">
-                        <div class="flex items-center gap-3">
-                            <h2 class="font-semibold text-lg">${day.label}</h2>
-                            ${progress === 100 && day.tasks.length > 0 ? '<i class="fa-solid fa-circle-check text-green-500 text-xl"></i>' : ''}
-                        </div>
-                        <i class="fa-solid fa-chevron-${day.isOpen ? 'up' : 'down'} text-gray-500"></i>
-                    </div>
-                    <div class="h-1.5 w-full bg-gray-200 dark:bg-gray-600">
-                        <div class="h-1.5 ${progressColor} transition-all duration-500 ease-in-out" style="width: ${progress}%"></div>
-                    </div>
-                `;
+    // Botão Voltar ao Topo
+    window.addEventListener('scroll', () => {
+      const show = window.scrollY > 360;
+      els.btnScrollTop.classList.toggle('hidden', !show);
+      els.btnScrollTop.classList.toggle('flex', show);
+    }, { passive: true });
 
-                // Corpo de Tarefas
-                let body = '';
-                if (day.isOpen) {
-                    let tasksHtml = day.tasks.map(task => `
-                        <div class="flex items-start justify-between p-3 border-b dark:border-gray-700 group hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors">
-                            <label class="flex items-start gap-3 cursor-pointer flex-1">
-                                <div class="relative flex items-center justify-center mt-1">
-                                    <input type="checkbox" ${task.done ? 'checked' : ''} onchange="toggleTask('${day.id}', '${task.id}')" class="peer h-6 w-6 cursor-pointer appearance-none rounded-md border-2 border-gray-300 dark:border-gray-600 checked:border-blue-600 checked:bg-blue-600 transition-all">
-                                    <i class="fa-solid fa-check absolute text-white opacity-0 peer-checked:opacity-100 pointer-events-none text-sm"></i>
-                                </div>
-                                <span class="flex-1 mt-1 leading-tight ${task.done ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-200'} transition-all">${task.text}</span>
-                            </label>
-                            <div class="flex gap-2 ml-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                                <button onclick="editTask('${day.id}', '${task.id}')" class="text-gray-400 hover:text-blue-500 p-2"><i class="fa-solid fa-pen text-sm"></i></button>
-                                <button onclick="deleteTask('${day.id}', '${task.id}')" class="text-gray-400 hover:text-red-500 p-2"><i class="fa-solid fa-trash text-sm"></i></button>
-                            </div>
-                        </div>
-                    `).join('');
+    els.btnScrollTop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
 
-                    if (day.tasks.length === 0) {
-                        tasksHtml = `<p class="text-center text-gray-400 dark:text-gray-500 py-4 text-sm">Nenhuma tarefa para este dia.</p>`;
-                    }
-
-                    // Input de Adicionar Tarefa
-                    let inputHtml = `
-                        <div class="p-3 bg-gray-50 dark:bg-gray-750 flex gap-2">
-                            <input type="text" id="input-${day.id}" placeholder="Adicionar nova tarefa..." class="flex-1 px-3 py-2 border dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" onkeypress="if(event.key === 'Enter') addTask('${day.id}')">
-                            <button onclick="addTask('${day.id}')" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"><i class="fa-solid fa-plus"></i></button>
-                        </div>
-                    `;
-
-                    body = `<div class="task-enter-active">${tasksHtml}${inputHtml}</div>`;
-                }
-
-                dayCard.innerHTML = header + body;
-                container.appendChild(dayCard);
-            });
-        }
-
-        // Inicializa o app
-        document.addEventListener('DOMContentLoaded', loadData);
-    </script>
+    // Inicialização
+    loadPersistedState();
+    renderAll();
+  </script>
 </body>
 </html>
